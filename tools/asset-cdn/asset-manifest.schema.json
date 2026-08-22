@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assets.repforge.app/schemas/asset-manifest-v17.schema.json",
+  "title": "RepForge assetManifest v17",
+  "description": "Manifest of 3D exercise assets served from the R2 CDN (assets.repforge.app). Content-addressed object paths embed the first 12 hex chars of the GLB's SHA-256, so a given path is immutable forever. The Android client validates sha256 before caching an object (plan todo 27); the upload pipeline (plan todo 25) must emit manifests matching this schema.",
+  "type": "object",
+  "required": ["manifestVersion", "generatedAt", "assets"],
+  "additionalProperties": false,
+  "properties": {
+    "manifestVersion": {
+      "description": "Schema version of this manifest document. Locked to 17.",
+      "const": 17
+    },
+    "generatedAt": {
+      "description": "RFC 3339 UTC timestamp of when the upload pipeline generated this manifest.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/assetEntry" }
+    }
+  },
+  "$defs": {
+    "sha256Hex": {
+      "description": "Lowercase hex-encoded SHA-256 digest (64 hex chars) of the GLB file bytes.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "exerciseId": {
+      "description": "Stable snake_case exercise identifier, matching tools/exercise-assets/exercise_catalog.yaml keys.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "assetEntry": {
+      "type": "object",
+      "required": [
+        "exerciseId",
+        "glbPath",
+        "thumb512Path",
+        "heroPath",
+        "sha256",
+        "sizeBytes",
+        "version",
+        "draco"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "exerciseId": { "$ref": "#/$defs/exerciseId" },
+        "glbPath": {
+          "description": "Content-addressed GLB path: /assets/exercises/<id>/movement.v<N>.<sha256-12>.glb where <sha256-12> is the first 12 hex chars of sha256 and <N> equals version. Cross-field consistency is enforced by validate_manifest.py.",
+          "type": "string",
+          "pattern": "^/assets/exercises/[a-z][a-z0-9_]*/movement\\.v[1-9][0-9]*\\.[0-9a-f]{12}\\.glb$"
+        },
+        "thumb512Path": {
+          "description": "512px WebP list thumbnail: /assets/exercises/<id>/thumb512.v<N>.<hash12>.webp (hash12 is the thumb file's own digest prefix; may differ from the GLB hash).",
+          "type": "string",
+          "pattern": "^/assets/exercises/[a-z][a-z0-9_]*/thumb512\\.v[1-9][0-9]*\\.[0-9a-f]{12}\\.webp$"
+        },
+        "heroPath": {
+          "description": "768-1024px WebP hero image: /assets/exercises/<id>/hero.v<N>.<hash12>.webp (hash12 is the hero file's own digest prefix; may differ from the GLB hash).",
+          "type": "string",
+          "pattern": "^/assets/exercises/[a-z][a-z0-9_]*/hero\\.v[1-9][0-9]*\\.[0-9a-f]{12}\\.webp$"
+        },
+        "sha256": { "$ref": "#/$defs/sha256Hex" },
+        "sizeBytes": {
+          "description": "Size of the GLB file in bytes.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "version": {
+          "description": "Monotonic per-exercise asset version; increments on every re-export. Must equal the v<N> segment embedded in each path.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "draco": {
+          "description": "True when the GLB uses Draco geometry compression (client must init the Draco decoder before loading).",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

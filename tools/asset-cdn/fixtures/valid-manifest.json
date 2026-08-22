@@ -1,0 +1,26 @@
+{
+  "manifestVersion": 17,
+  "generatedAt": "2026-08-22T00:00:00Z",
+  "assets": [
+    {
+      "exerciseId": "bench_press",
+      "glbPath": "/assets/exercises/bench_press/movement.v3.05c38affb17e.glb",
+      "thumb512Path": "/assets/exercises/bench_press/thumb512.v3.18febe7022ea.webp",
+      "heroPath": "/assets/exercises/bench_press/hero.v3.ad7935be9e60.webp",
+      "sha256": "05c38affb17e5e2733917879bfcc27dcec43dcdadc0f67cfc5e1ae6a6b66a66f",
+      "sizeBytes": 1874321,
+      "version": 3,
+      "draco": true
+    },
+    {
+      "exerciseId": "squat",
+      "glbPath": "/assets/exercises/squat/movement.v1.758fd373e9f2.glb",
+      "thumb512Path": "/assets/exercises/squat/thumb512.v1.7aec18dbac6a.webp",
+      "heroPath": "/assets/exercises/squat/hero.v1.c2777fd623d7.webp",
+      "sha256": "758fd373e9f2aed1e85edd24a786547877c1983ca3fc7b6441eb667dbac9c496",
+      "sizeBytes": 2103877,
+      "version": 1,
+      "draco": true
+    }
+  ]
+}

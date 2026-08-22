@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assets.repforge.app/schemas/model-manifest.schema.json",
+  "title": "RepForge modelManifest",
+  "description": "Manifest of LiteRT adaptive-coach models served from the R2 CDN, per blueprint p.769. The Android client validates sha256 before caching a model file and enforces minAppVersion compatibility; rollout gates staged promotion (champion/challenger per plan todos 20-24).",
+  "type": "object",
+  "required": ["manifestVersion", "models"],
+  "additionalProperties": false,
+  "properties": {
+    "manifestVersion": {
+      "description": "Monotonic version of this manifest document; incremented on every model promotion or rollback.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/modelEntry" }
+    }
+  },
+  "$defs": {
+    "modelEntry": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "schemaVersion",
+        "minAppVersion",
+        "sha256",
+        "url",
+        "rollout"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Stable model identifier, e.g. 'adaptive-loader-global'.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "version": {
+          "description": "Monotonic integer model version; increments on every retrain that passes the promotion gate.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "schemaVersion": {
+          "description": "Feature/input schema version the model was trained against; client refuses models whose schemaVersion it cannot build features for.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "minAppVersion": {
+          "description": "Minimum app version (semver X.Y.Z) able to run this model.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "sha256": {
+          "description": "Lowercase hex-encoded SHA-256 digest (64 hex chars) of the .tflite file bytes; validated by the client before caching.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "url": {
+          "description": "Absolute HTTPS URL of the model object on the CDN.",
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "rollout": {
+          "description": "Percentage of eligible devices (0-100) served this model version; enables staged champion/challenger promotion and atomic rollback.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    }
+  }
+}

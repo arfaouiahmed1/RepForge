@@ -1,0 +1,59 @@
+# RepForge R2 asset CDN - wrangler configuration TEMPLATE
+#
+# STATUS: template only. Nothing has been provisioned. Copy to wrangler.toml
+# ONLY after completing the manual account steps in README.md (steps 0-3).
+# This file alone does NOT create a bucket, a domain, or any cloud resource.
+
+name = "repforge-assets-cdn"
+compatibility_date = "2026-08-01"
+
+# R2 bucket binding. Used by upload tooling (plan todo 25) and CI; the Android
+# app never uses this binding - it fetches objects directly from
+# https://assets.repforge.app over plain HTTPS.
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "repforge-assets"
+
+# Custom domain: assets.repforge.app
+#
+# NOTE: R2 custom domains are attached per-bucket in the Cloudflare dashboard
+# (R2 -> repforge-assets -> Settings -> Custom Domains -> Connect Domain) or
+# via the Cloudflare API. There is NO wrangler.toml key for R2 custom domains.
+# Requires the DNS zone `repforge.app` to be hosted on Cloudflare (free plan
+# is sufficient). See README.md step 3 for exact clicks.
+
+# ---------------------------------------------------------------------------
+# CACHE RULES (Cloudflare dashboard -> repforge.app zone -> Caching -> Cache
+# Rules -> Create rule). Two rules, evaluated top-down:
+#
+# Rule 1 - name: "manifests-short-ttl"
+#   When incoming requests match:
+#     URI Path ends with "-manifest.json"
+#     (covers /assets-manifest.json and /models-manifest.json)
+#   Then:
+#     Eligible for cache: yes
+#     Edge TTL: Override origin, 60 seconds
+#     Browser TTL: Override origin, 60 seconds
+#     Response header: set static Cache-Control = public,max-age=60
+#
+# Rule 2 - name: "hashed-assets-immutable"
+#   When incoming requests match:
+#     URI Path starts with "/assets/exercises/"
+#   Then:
+#     Eligible for cache: yes
+#     Edge TTL: Override origin, 31536000 seconds (1 year)
+#     Browser TTL: Override origin, 31536000 seconds (1 year)
+#     Response header: set static Cache-Control =
+#       public,max-age=31536000,immutable
+#
+# WHY: content-addressed filenames (movement.v<N>.<sha256-12>.glb,
+# thumb512/hero .webp) embed the object digest, so a given path can never
+# change meaning - year-long immutable caching is safe and makes repeat
+# downloads free at the edge. Manifests change on every release wave and get
+# a 60-second TTL so clients pick up new versions within a minute without
+# hammering origin.
+#
+# Uploads should ALSO stamp matching Cache-Control metadata on each object
+# (`wrangler r2 object put ... --cache-control "..."`), so the headers are
+# correct even where Cache Rules do not apply.
+# ---------------------------------------------------------------------------
