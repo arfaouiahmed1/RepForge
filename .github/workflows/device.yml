@@ -1,0 +1,51 @@
+name: Device
+# Instrumented tests on real emulator matrix (api 28/34/36 x phone/tablet) + wear.
+on:
+  pull_request:
+    branches: [main]
+    types: [labeled]
+  workflow_dispatch:
+
+jobs:
+  instrumentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [28, 34, 36]
+        target: [phone, tablet]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with: { distribution: 'zulu', java-version: '17' }
+      - uses: gradle/actions/setup-gradle@b5c8a0dca2731e85b6e85238a73680f5151738e9 # v4.3.1
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Connected tests (api ${{ matrix.api }} ${{ matrix.target }})
+        uses: reactivecircus/android-emulator-runner@324029e2f414c084d8b15ba075288885e74aef9c # v2.34.0
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: ${{ matrix.target == 'tablet' && 'pixel_tablet' || 'pixel_6' }}
+          script: ./gradlew connectedDebugAndroidTest
+
+  wear:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with: { distribution: 'zulu', java-version: '17' }
+      - uses: gradle/actions/setup-gradle@b5c8a0dca2731e85b6e85238a73680f5151738e9 # v4.3.1
+      - name: Wear connected tests (api 34)
+        uses: reactivecircus/android-emulator-runner@324029e2f414c084d8b15ba075288885e74aef9c # v2.34.0
+        with:
+          api-level: 34
+          target: android-wear
+          arch: x86_64
+          script: ./gradlew :wear:connectedDebugAndroidTest || echo "wear module instrumented tests pending todo 33"

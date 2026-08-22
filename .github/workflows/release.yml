@@ -1,4 +1,6 @@
 name: Release
+# Tag-driven signed release. oss/gms flavor bundling arrives in todo 59;
+# Play Developer API publishing arrives in todo 54.
 on:
   push:
     tags: ['v*']
@@ -8,11 +10,11 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with: { distribution: 'zulu', java-version: '17' }
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@b5c8a0dca2731e85b6e85238a73680f5151738e9 # v4.3.1
       - name: Build AAB
         run: ./gradlew bundleRelease
       - name: Upload to Play (closed testing)
-        run: echo "configure Play Developer API + service account"
+        run: echo "configure Play Developer API + service account (todo 54); flavors gms/oss via todo 59"
