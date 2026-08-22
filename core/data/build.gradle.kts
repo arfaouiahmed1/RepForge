@@ -8,6 +8,7 @@ android {
     compileSdk = 36
     defaultConfig { minSdk = 28 }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+    testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 dependencies {
     api(project(":core:model"))
@@ -21,7 +22,13 @@ dependencies {
     ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlinx.serialization.json)
     implementation(project(":core:notifications"))
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 kotlin {
