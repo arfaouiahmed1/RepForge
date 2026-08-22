@@ -26,7 +26,7 @@ jobs:
       - name: Unit tests + Room + ML inference golden vectors
         run: ./gradlew testDebugUnitTest
       - name: Verify Room migrations
-        run: ./gradlew verifyRoomMigrations --continue || echo "add Room schema export"
+        run: ./gradlew :core:database:verifyRoomMigrations
 
   build:
     runs-on: ubuntu-latest
