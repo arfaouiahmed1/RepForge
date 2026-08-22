@@ -79,7 +79,6 @@ object ExerciseSeed {
         ex("farmers", "Farmer Carry", "FULL_BODY", "FOREARMS,CORE", "DUMBBELL", "farmers.glb"),
         ex("burpee", "Burpee", "FULL_BODY", "", "BODYWEIGHT", "burpee.glb"),
     )
-    val all = exercises + extended
 
     // ── 60 MORE — fill gaps: forearms, neck, mobility, carries, unilateral, band ──
     val extended: List<ExerciseEntity> = listOf(
@@ -141,6 +140,8 @@ object ExerciseSeed {
         rich("face_pull_band", "Band Face Pull", "SHOULDERS", "BACK", "BAND", "HOME", "HORIZONTAL_PULL", "REPS_ONLY", "BEGINNER", false, "Home face pull", listOf("Band at face height", "Pull apart", "Hold 1s"), "band_face.glb"),
         rich("sissy_squat", "Sissy Squat", "QUADS", "", "BODYWEIGHT", "HOME", "SQUAT", "REPS_ONLY", "ADVANCED", false, "Quad isolation squat", listOf("Hold support", "Knees forward", "Lean back"), "sissy.glb"),
     )
+
+    val all = exercises + extended
 
     private fun locationFor(eq: String) = when (eq) {
         "BODYWEIGHT", "BAND" -> "HOME"

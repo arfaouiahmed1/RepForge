@@ -60,7 +60,7 @@ fun RepForgeNavIconView(
 private fun DrawScope.drawWithScale(scale: Float, block: DrawScope.() -> Unit) {
     val cx = size.width / 2; val cy = size.height / 2
     drawContext.canvas.save()
-    drawContext.canvas.scale(scale, scale, cx, cy)
+    drawContext.transform.scale(scale, scale, Offset(cx, cy))
     block()
     drawContext.canvas.restore()
 }

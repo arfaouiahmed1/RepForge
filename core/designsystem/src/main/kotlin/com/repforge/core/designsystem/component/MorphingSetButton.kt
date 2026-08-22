@@ -16,6 +16,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.repforge.core.designsystem.token.RepForgeMotion
 import com.repforge.core.designsystem.token.RepForgeShapes
 import com.repforge.core.designsystem.token.RepForgeTypeRoles
