@@ -28,7 +28,7 @@ class SyncWorker @AssistedInject constructor(
         var failed = 0
         for (op in pending) {
             val ok = engine.push(op)
-            if (ok) syncDao.markSynced(op.id) else failed++
+            if (ok) syncDao.markSynced(op.operationId) else failed++
         }
         return if (failed == 0) Result.success() else Result.retry()
     }
