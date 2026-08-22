@@ -17,9 +17,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.repforge.core.data.repository.ProfileRepository
+import com.repforge.core.data.repository.WorkoutRepository
 import com.repforge.core.database.dao.RoutineDao
 import com.repforge.core.database.dao.SetLogDao
 import com.repforge.core.database.dao.TrainingSessionDao
+import com.repforge.core.database.entity.RoutineEntity
 import com.repforge.core.designsystem.component.*
 import com.repforge.core.designsystem.token.RepForgeShapes
 import com.repforge.core.designsystem.token.RepForgeTypeRoles
@@ -28,6 +30,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -52,6 +56,7 @@ class TodayViewModel @Inject constructor(
     private val sessionDao: TrainingSessionDao,
     private val setLogDao: SetLogDao,
     private val profileRepo: ProfileRepository,
+    private val workoutRepository: WorkoutRepository,
 ) : ViewModel() {
 
     // Realistic: observe routines, pick today's by dayOfWeek, else first
@@ -107,6 +112,30 @@ class TodayViewModel @Inject constructor(
             isRestDay = isRest,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TodayUiState())
+
+    /**
+     * Todo 11 acceptance: tapping START persists a REAL Room session in ACTIVE state
+     * BEFORE navigation, so process death mid-workout still finds a resumable session.
+     */
+    fun startWorkout(onReady: () -> Unit) {
+        viewModelScope.launch {
+            val state = state.value
+            val routine = routineFor(state)
+            workoutRepository.startSession(
+                routineId = routine?.id,
+                routineName = routine?.name ?: "${state.planNameTop} ${state.planNameBottom}",
+            )
+            onReady()
+        }
+    }
+
+    private suspend fun routineFor(state: TodayUiState): RoutineEntity? {
+        val cal = Calendar.getInstance()
+        val dayIdx = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Mon=0
+        return routineDao.observeAll().first().let { routines ->
+            routines.find { it.dayOfWeek == dayIdx } ?: routines.firstOrNull()
+        }
+    }
 }
 
 @Composable
@@ -116,7 +145,12 @@ fun TodayRoute(
 ) {
     val state by viewModel.state.collectAsState()
     val notifPerm = rememberNotificationPermissionState()
-    TodayScreen(state = state, hasNotifPermission = notifPerm.hasPermission, onRequestNotif = notifPerm.request, onStartWorkout = onStartWorkout)
+    TodayScreen(
+        state = state,
+        hasNotifPermission = notifPerm.hasPermission,
+        onRequestNotif = notifPerm.request,
+        onStartWorkout = { viewModel.startWorkout(onStartWorkout) },
+    )
 }
 
 @Composable
