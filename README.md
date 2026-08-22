@@ -1,6 +1,6 @@
 # RepForge — Material 3 Expressive Strength Training
 
-[![PR](https://github.com/ahmed/RepForge/actions/workflows/pr.yml/badge.svg)](https://github.com/ahmed/RepForge/actions/workflows/pr.yml)
+[![PR](https://github.com/arfaouiahmed1/RepForge/actions/workflows/pr.yml/badge.svg)](https://github.com/arfaouiahmed1/RepForge/actions/workflows/pr.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF.svg?logo=kotlin)
 ![minSdk](https://img.shields.io/badge/minSdk-28-34A853.svg)
