@@ -1,0 +1,39 @@
+RepForge
+Copyright 2026 <copyright holder> (GitHub: @ahmed)
+
+This repository contains original work for the RepForge strength-training
+app, plus dependencies developed by third parties. This file attributes the
+most significant of those dependencies. Full license texts and per-dependency
+details live in THIRD_PARTY_NOTICES.md; the license for RepForge itself is in
+LICENSE (Apache License 2.0).
+
+Third-party components depended upon at build time:
+
+* Filament (com.google.android.filament.*)
+  Copyright 2019 The Android Open Source Project
+  Licensed under the Apache License, Version 2.0.
+  Physically based renderer used for workout visuals.
+
+* SceneView (io.github.sceneview:*)
+  Copyright the SceneView authors (https://github.com/SceneView)
+  Licensed under the Apache License, Version 2.0.
+  Compose-friendly wrappers around Filament and ARCore.
+
+* Health Connect SDK (androidx.health.connect:connect-client)
+  Copyright The Android Open Source Project
+  Licensed under the Apache License, Version 2.0 (AndroidX).
+
+* Google Sans Flex (variable font, loaded as res/font/google_sans_flex.ttf)
+  Copyright Google LLC
+  Font files from the google/fonts repository are licensed under the SIL
+  Open Font License, Version 1.1 where applicable. The font binary is added
+  locally during setup (see README "What to do next"); this repository does
+  not redistribute it.
+
+Firebase (Auth, Firestore, Crashlytics, Remote Config), Play Billing,
+Glance, and other AndroidX and JetBrains libraries are attributed with their
+licenses in THIRD_PARTY_NOTICES.md, which is kept current by the dependency
+license scan.
+
+Google Sans and Android are trademarks of Google LLC. This project is not
+affiliated with, endorsed by, or sponsored by Google.

@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0
+Upstream-Name: RepForge
+Upstream-Contact: Ahmed <security@repforge.app>
+Source: https://github.com/ahmed/RepForge
+
+# Repo-wide default licensing (REUSE Spec 3.3).
+# Individual third-party assets are covered by licenses/<assetId>.json ledger (todo 51)
+# and THIRD_PARTY_NOTICES.md.
+Files: *
+Copyright: 2026 RepForge contributors
+License: Apache-2.0
+
+Files: tools/exercise-assets/*
+Copyright: 2026 RepForge contributors
+License: Apache-2.0
