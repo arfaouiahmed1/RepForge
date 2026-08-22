@@ -16,12 +16,14 @@ dependencies {
     implementation(bom)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
-    // 3D — Filament disabled for demo to avoid Kotlin 2.4 metadata mismatch (1.74 needs Kotlin 2.4). Placeholder 2D chips work.
-    // When you bump to Kotlin 2.4 + KSP 2.4, uncomment:
-    // implementation("io.github.sceneview:sceneview:4.30.0")
-    // implementation("com.google.android.filament:filament-android:1.74.0")
-    // implementation("com.google.android.filament:filament-utils-android:1.74.0")
-    // implementation("com.google.android.filament:gltfio-android:1.74.0")
+    // 3D stack ACTIVE (todo 23): Kotlin 2.4.10 built-in unblocks Filament 1.75.0 / SceneView 4.31.0.
+    // All io.github.sceneview / com.google.android.filament imports stay INSIDE this module,
+    // hidden from feature modules behind the ExerciseRenderer interface.
+    implementation(libs.sceneview)
+    implementation(libs.filament.android)
+    implementation(libs.filament.utils.android)
+    implementation(libs.gltfio.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.core.ktx)
 }
 

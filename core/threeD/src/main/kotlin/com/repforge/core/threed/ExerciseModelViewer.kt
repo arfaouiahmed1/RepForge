@@ -38,6 +38,12 @@ fun ExerciseModelViewer(
             try { context.assets.open(glbAsset).close(); true } catch (_: Exception) { false }
         }
     }
+    val renderer = remember { SceneViewExerciseRenderer(context) }
+    val renderState by renderer.state.collectAsState()
+    DisposableEffect(Unit) { onDispose { renderer.destroy() } }
+    LaunchedEffect(glbAsset, hasAsset) {
+        if (hasAsset) renderer.preload(glbAsset) else renderer.releaseAll()
+    }
     var isPlaying by remember { mutableStateOf(true) }
     val infinite = rememberInfiniteTransition(label = "motionLoop")
     val anim by infinite.animateFloat(
@@ -84,7 +90,13 @@ fun ExerciseModelViewer(
             drawCircle(color = ember, radius = 7f, center = Offset(w*0.12f + t * w*0.76f, h*0.90f))
         }
         Column(modifier = Modifier.align(Alignment.TopStart).padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(if (hasAsset) "GLB • 3.5s loop • 30fps" else "Procedural preview — add GLB for true 3D", style = RepForgeTypeRoles.LabelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
+            val stateLabel = when (val s = renderState) {
+                is ExerciseRenderState.Ready -> "GLB • 3D ready • ${s.assetId.take(6)}"
+                is ExerciseRenderState.Loading -> "GLB • loading 3D…"
+                is ExerciseRenderState.Failed -> "Procedural preview — 3D load failed"
+                ExerciseRenderState.Idle -> if (hasAsset) "GLB • 3.5s loop • 30fps" else "Procedural preview — add GLB for true 3D"
+            }
+            Text(stateLabel, style = RepForgeTypeRoles.LabelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
             if (highlightMuscles.isNotEmpty()) {
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     highlightMuscles.entries.take(3).forEach { (k,v) ->
