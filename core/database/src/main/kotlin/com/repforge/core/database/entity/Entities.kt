@@ -1,6 +1,8 @@
 package com.repforge.core.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "exercises")
@@ -53,6 +55,10 @@ data class RoutineEntity(
     val level: String = "INTERMEDIATE",
     val createdAt: Long,
     val updatedAt: Long,
+    /** Sync bookkeeping (schema v4): bumped on every local mutation; server is merge authority. */
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    /** Tombstone (schema v4): non-null = soft-deleted; hard delete only via sync GC. */
+    val deletedAt: Long? = null,
 )
 
 @Entity(tableName = "routine_exercises", primaryKeys = ["routineId", "exerciseId", "position"])
@@ -64,6 +70,10 @@ data class RoutineExerciseEntity(
     val targetReps: Int,
     val targetRir: Int?,
     val restSeconds: Int,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = 0,
+    @ColumnInfo(defaultValue = "0") val updatedAt: Long = 0,
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    val deletedAt: Long? = null,
 )
 
 @Entity(tableName = "training_sessions")
@@ -74,6 +84,10 @@ data class TrainingSessionEntity(
     val state: String,
     val startedAt: Long,
     val completedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = startedAt,
+    @ColumnInfo(defaultValue = "0") val updatedAt: Long = startedAt,
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    val deletedAt: Long? = null,
 )
 
 @Entity(tableName = "set_logs")
@@ -95,6 +109,10 @@ data class SetLogEntity(
     val timestamp: Long,
     val recommendationId: String?,
     val recommendationAccepted: Boolean?,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = timestamp,
+    @ColumnInfo(defaultValue = "0") val updatedAt: Long = timestamp,
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    val deletedAt: Long? = null,
 )
 
 @Entity(tableName = "personal_records", primaryKeys = ["exerciseId"])
@@ -121,6 +139,8 @@ data class UserProfileEntity(
     val units: String,
     val createdAt: Long,
     val updatedAt: Long,
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    val deletedAt: Long? = null,
 )
 
 @Entity(tableName = "body_metrics")
@@ -133,8 +153,17 @@ data class BodyMetricEntity(
     val bmi: Double?,
     val measuredAt: Long,
     val source: String,
+    @ColumnInfo(defaultValue = "0") val createdAt: Long = measuredAt,
+    @ColumnInfo(defaultValue = "0") val updatedAt: Long = measuredAt,
+    @ColumnInfo(defaultValue = "0") val revision: Long = 0,
+    val deletedAt: Long? = null,
 )
 
+/**
+ * Judgment call (todo 9): achievements are a server-derived unlock catalog — immutable once
+ * unlocked, no user-facing delete path, so tombstones/revision are meaningless here. Excluded
+ * from the tombstone model for the same reason as ExerciseEntity (catalog versioned separately).
+ */
 @Entity(tableName = "achievements")
 data class AchievementEntity(
     @PrimaryKey val id: String,
@@ -148,13 +177,24 @@ data class AchievementEntity(
     val targetValue: Double?,
 )
 
-@Entity(tableName = "sync_operations")
+/**
+ * Outbox row for POST /v1/sync/push (mirrors backend sync_operations wire contract).
+ * operationId is the client-generated UUID primary key so replays are idempotent;
+ * idempotencyKey is UNIQUE at the schema level as a second guard against double-enqueue.
+ */
+@Entity(
+    tableName = "sync_operations",
+    indices = [Index(value = ["idempotencyKey"], unique = true)],
+)
 data class SyncOperationEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey val operationId: String,
     val entityType: String,
     val entityId: String,
     val operation: String, // insert | update | delete
     val payloadJson: String,
+    /** Expected server revision; mismatch ⇒ CONFLICT in push results. */
+    @ColumnInfo(defaultValue = "0") val baseRevision: Long = 0,
+    val idempotencyKey: String,
     val createdAt: Long,
-    val synced: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val synced: Boolean = false,
 )

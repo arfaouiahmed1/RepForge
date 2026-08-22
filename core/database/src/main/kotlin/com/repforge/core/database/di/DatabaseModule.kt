@@ -2,6 +2,7 @@ package com.repforge.core.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.repforge.core.database.MIGRATION_3_4
 import com.repforge.core.database.RepForgeDatabase
 import dagger.Module
 import dagger.Provides
@@ -17,8 +18,9 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): RepForgeDatabase =
         Room.databaseBuilder(context, RepForgeDatabase::class.java, "repforge.db")
+            .addMigrations(MIGRATION_3_4)
             .fallbackToDestructiveMigrationOnDowngrade()
-            .fallbackToDestructiveMigration() // v1->v2 adds profile/metrics/achievements
+            .fallbackToDestructiveMigration() // pre-v3 installs (v1->v2 adds profile/metrics/achievements)
             .build()
 
     @Provides fun provideExerciseDao(db: RepForgeDatabase) = db.exerciseDao()

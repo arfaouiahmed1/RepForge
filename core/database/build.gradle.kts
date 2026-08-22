@@ -11,6 +11,11 @@ android {
     compileSdk = 36
     defaultConfig { minSdk = 28 }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+    // Robolectric unit tests (Room in-memory DB + MigrationTestHelper) need merged resources/assets.
+    testOptions { unitTests { isIncludeAndroidResources = true } }
+    // NOTE: schema JSONs for MigrationTestHelper are provided as plain files under
+    // src/test/assets/schemas/ (copied from ./schemas) because AGP 9.3.1 + Gradle 9.5
+    // throws a decorated-cast ClassCastException on sourceSets.getByName("test"){} here.
 }
 dependencies {
     api(project(":core:model"))
@@ -21,6 +26,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.room.testing)
 }
 
 kotlin {

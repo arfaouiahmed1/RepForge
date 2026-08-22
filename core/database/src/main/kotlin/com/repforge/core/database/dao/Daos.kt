@@ -20,72 +20,137 @@ interface ExerciseDao {
 
 @Dao
 interface RoutineDao {
-    @Query("SELECT * FROM routines ORDER BY dayOfWeek, createdAt")
+    @Query("SELECT * FROM routines WHERE deletedAt IS NULL ORDER BY dayOfWeek, createdAt")
     fun observeAll(): Flow<List<RoutineEntity>>
-    @Query("SELECT * FROM routines WHERE id = :id")
+    @Query("SELECT * FROM routines WHERE id = :id AND deletedAt IS NULL")
     suspend fun getById(id: String): RoutineEntity?
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(routine: RoutineEntity)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertAll(routines: List<RoutineEntity>)
-    @Query("DELETE FROM routines WHERE id = :id")
-    suspend fun delete(id: String)
+    /** Soft delete: tombstone + revision bump; row stays for sync pull until server GC. */
+    @Query(
+        "UPDATE routines SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE id = :id AND deletedAt IS NULL"
+    )
+    suspend fun softDelete(id: String, now: Long)
+    /** Sync query: includes tombstoned rows so deletions propagate to the server. */
+    @Query("SELECT * FROM routines")
+    suspend fun getAllForSync(): List<RoutineEntity>
+    /** Transactional merge by id (cloud → room replay); upsert keeps highest supplied fields. */
+    @Transaction
+    suspend fun mergeById(items: List<RoutineEntity>) {
+        items.forEach { upsert(it) }
+    }
 }
 
 @Dao
 interface RoutineExerciseDao {
-    @Query("SELECT * FROM routine_exercises WHERE routineId = :routineId ORDER BY position")
+    @Query("SELECT * FROM routine_exercises WHERE routineId = :routineId AND deletedAt IS NULL ORDER BY position")
     fun observeForRoutine(routineId: String): Flow<List<RoutineExerciseEntity>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertAll(items: List<RoutineExerciseEntity>)
+    /** Structural reset used by the seeder when replacing a routine's exercise lines. */
     @Query("DELETE FROM routine_exercises WHERE routineId = :routineId")
     suspend fun clearForRoutine(routineId: String)
+    /** User-visible delete of a whole routine's lines: tombstone instead of hard delete. */
+    @Query(
+        "UPDATE routine_exercises SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE routineId = :routineId AND deletedAt IS NULL"
+    )
+    suspend fun softDeleteForRoutine(routineId: String, now: Long)
+    @Query("SELECT * FROM routine_exercises")
+    suspend fun getAllForSync(): List<RoutineExerciseEntity>
+    @Transaction
+    suspend fun mergeById(items: List<RoutineExerciseEntity>) {
+        items.forEach { upsertAll(listOf(it)) }
+    }
 }
 
 @Dao
 interface TrainingSessionDao {
-    @Query("SELECT * FROM training_sessions ORDER BY startedAt DESC")
+    @Query("SELECT * FROM training_sessions WHERE deletedAt IS NULL ORDER BY startedAt DESC")
     fun observeAll(): Flow<List<TrainingSessionEntity>>
-    @Query("SELECT * FROM training_sessions WHERE id = :id")
+    @Query("SELECT * FROM training_sessions WHERE id = :id AND deletedAt IS NULL")
     suspend fun getById(id: String): TrainingSessionEntity?
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(session: TrainingSessionEntity)
+    @Query(
+        "UPDATE training_sessions SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE id = :id AND deletedAt IS NULL"
+    )
+    suspend fun softDelete(id: String, now: Long)
+    @Query("SELECT * FROM training_sessions")
+    suspend fun getAllForSync(): List<TrainingSessionEntity>
+    @Transaction
+    suspend fun mergeById(items: List<TrainingSessionEntity>) {
+        items.forEach { upsert(it) }
+    }
 }
 
 @Dao
 interface SetLogDao {
-    @Query("SELECT * FROM set_logs WHERE sessionId = :sessionId ORDER BY timestamp")
+    @Query("SELECT * FROM set_logs WHERE sessionId = :sessionId AND deletedAt IS NULL ORDER BY timestamp")
     fun observeForSession(sessionId: String): Flow<List<SetLogEntity>>
-    @Query("SELECT * FROM set_logs WHERE exerciseId = :exerciseId ORDER BY timestamp DESC LIMIT :limit")
+    @Query("SELECT * FROM set_logs WHERE exerciseId = :exerciseId AND deletedAt IS NULL ORDER BY timestamp DESC LIMIT :limit")
     fun observeForExercise(exerciseId: String, limit: Int = 50): Flow<List<SetLogEntity>>
-    @Query("SELECT * FROM set_logs ORDER BY timestamp DESC LIMIT :limit")
+    @Query("SELECT * FROM set_logs WHERE deletedAt IS NULL ORDER BY timestamp DESC LIMIT :limit")
     fun observeRecent(limit: Int = 100): Flow<List<SetLogEntity>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(set: SetLogEntity)
-    @Query("DELETE FROM set_logs WHERE setId = :setId")
-    suspend fun delete(setId: String)
+    @Query(
+        "UPDATE set_logs SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE setId = :setId AND deletedAt IS NULL"
+    )
+    suspend fun softDelete(setId: String, now: Long)
+    @Query("SELECT * FROM set_logs")
+    suspend fun getAllForSync(): List<SetLogEntity>
+    @Transaction
+    suspend fun mergeById(items: List<SetLogEntity>) {
+        items.forEach { upsert(it) }
+    }
 }
 
 @Dao
 interface UserProfileDao {
-    @Query("SELECT * FROM user_profiles LIMIT 1")
+    @Query("SELECT * FROM user_profiles WHERE deletedAt IS NULL LIMIT 1")
     fun observe(): Flow<UserProfileEntity?>
-    @Query("SELECT * FROM user_profiles LIMIT 1")
+    @Query("SELECT * FROM user_profiles WHERE deletedAt IS NULL LIMIT 1")
     suspend fun get(): UserProfileEntity?
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(profile: UserProfileEntity)
+    @Query(
+        "UPDATE user_profiles SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE id = :id AND deletedAt IS NULL"
+    )
+    suspend fun softDelete(id: String, now: Long)
+    @Query("SELECT * FROM user_profiles")
+    suspend fun getAllForSync(): List<UserProfileEntity>
+    @Transaction
+    suspend fun mergeById(items: List<UserProfileEntity>) {
+        items.forEach { upsert(it) }
+    }
 }
 
 @Dao
 interface BodyMetricDao {
-    @Query("SELECT * FROM body_metrics ORDER BY measuredAt DESC")
+    @Query("SELECT * FROM body_metrics WHERE deletedAt IS NULL ORDER BY measuredAt DESC")
     fun observeAll(): Flow<List<BodyMetricEntity>>
-    @Query("SELECT * FROM body_metrics ORDER BY measuredAt DESC LIMIT 1")
+    @Query("SELECT * FROM body_metrics WHERE deletedAt IS NULL ORDER BY measuredAt DESC LIMIT 1")
     fun observeLatest(): Flow<BodyMetricEntity?>
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(metric: BodyMetricEntity)
-    @Query("DELETE FROM body_metrics WHERE id = :id")
-    suspend fun delete(id: String)
+    @Query(
+        "UPDATE body_metrics SET deletedAt = :now, updatedAt = :now, revision = revision + 1 " +
+            "WHERE id = :id AND deletedAt IS NULL"
+    )
+    suspend fun softDelete(id: String, now: Long)
+    @Query("SELECT * FROM body_metrics")
+    suspend fun getAllForSync(): List<BodyMetricEntity>
+    @Transaction
+    suspend fun mergeById(items: List<BodyMetricEntity>) {
+        items.forEach { upsert(it) }
+    }
 }
 
 @Dao
@@ -102,8 +167,20 @@ interface AchievementDao {
 interface SyncOperationDao {
     @Query("SELECT * FROM sync_operations WHERE synced = 0 ORDER BY createdAt")
     suspend fun getPending(): List<SyncOperationEntity>
-    @Insert
-    suspend fun insert(op: SyncOperationEntity)
-    @Query("UPDATE sync_operations SET synced = 1 WHERE id = :id")
-    suspend fun markSynced(id: Int)
+    @Query("SELECT * FROM sync_operations ORDER BY createdAt")
+    suspend fun getAll(): List<SyncOperationEntity>
+    /**
+     * Idempotent enqueue: a replayed operationId is IGNOREd by primary-key conflict and
+     * returns -1 (Room convention for ignored inserts). Unique idempotencyKey index backs
+     * this at the schema level.
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(op: SyncOperationEntity): Long
+    @Query("SELECT EXISTS(SELECT 1 FROM sync_operations WHERE operationId = :operationId)")
+    suspend fun existsByOperationId(operationId: String): Boolean
+    @Query("UPDATE sync_operations SET synced = 1 WHERE operationId = :operationId")
+    suspend fun markSynced(operationId: String)
+    /** GC for the outbox: drop acknowledged rows older than the cutoff. */
+    @Query("DELETE FROM sync_operations WHERE synced = 1 AND createdAt < :beforeEpochMs")
+    suspend fun pruneSyncedBefore(beforeEpochMs: Long)
 }
