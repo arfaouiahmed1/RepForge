@@ -1,0 +1,14 @@
+.gradle/
+build/
+*/build/
+.idea/
+*.iml
+local.properties
+google-services.json
+keystore.properties
+*.jks
+*.keystore
+.DS_Store
+
+# keep uv lock
+!ml/uv.lock

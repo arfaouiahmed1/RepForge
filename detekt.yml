@@ -1,0 +1,13 @@
+config:
+  validation: true
+complexity:
+  LongMethod:
+    threshold: 60
+  ComplexCondition:
+    threshold: 4
+style:
+  MaxLineLength:
+    maxLineLength: 120
+naming:
+  FunctionNaming:
+    functionPattern: '[a-z][a-zA-Z0-9]*'

@@ -1,0 +1,52 @@
+# RepForge 3D pipeline — single mannequin + equipment kit
+# Blender base: CC-BY human mesh heavily customized, Rigify rig, 30fps, 3-5s loops
+
+character:
+  base: blender_studio_human_ccby_custom.blend
+  rig: rigify
+  style: "clean athletic mannequin, soft anatomical, minimal face, strong silhouette"
+
+equipment_kit:
+  - olympic_bar
+  - plates_2_5_5_10_20
+  - dumbbells_pair
+  - bench_flat
+  - rack
+  - cable_handles
+  - lat_pulldown
+  - leg_press
+  - kettlebell_16
+  - bands
+
+exercises:
+  bench_press:
+    animation: bench_press # 0.0 setup, 1.3 eccentric, 1.6 bottom, 2.6 concentric, 3.2 loop
+    camera: upper_body_3_4
+    props: [bench_flat, olympic_bar]
+    primary: [chest, triceps, front_delts]
+    secondary: [serratus]
+    thumbnail: front # also 3_4, anatomy
+  squat:
+    animation: squat
+    camera: full_body_side
+    props: [rack, olympic_bar]
+    primary: [quads, glutes]
+    secondary: [hamstrings, core]
+  shoulder_press:
+    animation: ohp
+    camera: upper_body_3_4
+    props: [olympic_bar]
+    primary: [front_delts, triceps]
+
+# ... 300 entries total — one animation per exercise on same skeleton
+
+pipeline:
+  export: glb # glTF 2.0 binary
+  fps: 30
+  seconds: 3.5
+  thumbnail:
+    size: 1024
+    camera: 50mm
+    lighting: [soft_key, rim, fill]
+    background: transparent
+  manifest: exercise_manifest.json # {id, glb, webp, bounds, sha256}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RepForge</string>
+    <string name="shortcut_today_short">Start workout</string>
+    <string name="shortcut_today_long">Start Push Day</string>
+    <string name="shortcut_log_short">Log weight</string>
+    <string name="shortcut_log_long">Log body weight</string>
+    <string name="shortcut_library_short">Library</string>
+    <string name="shortcut_library_long">Open 3D library</string>
+    <string name="shortcut_resume_short">Resume</string>
+    <string name="shortcut_resume_long">Resume workout</string>
+</resources>

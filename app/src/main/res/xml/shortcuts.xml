@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="start_today" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_today_short" android:shortcutLongLabel="@string/shortcut_today_long">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.repforge.app" android:targetClass="com.repforge.app.MainActivity" android:data="repforge://workout" />
+    </shortcut>
+    <shortcut android:shortcutId="log_weight" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_log_short" android:shortcutLongLabel="@string/shortcut_log_long"><intent android:action="android.intent.action.VIEW" android:targetPackage="com.repforge.app" android:targetClass="com.repforge.app.MainActivity" android:data="repforge://profile" /></shortcut>
+    <shortcut android:shortcutId="library" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_library_short" android:shortcutLongLabel="@string/shortcut_library_long"><intent android:action="android.intent.action.VIEW" android:targetPackage="com.repforge.app" android:targetClass="com.repforge.app.MainActivity" android:data="repforge://exercises" /></shortcut>
+    <shortcut android:shortcutId="resume" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/shortcut_resume_short" android:shortcutLongLabel="@string/shortcut_resume_long"><intent android:action="android.intent.action.VIEW" android:targetPackage="com.repforge.app" android:targetClass="com.repforge.app.MainActivity" android:data="repforge://workout/active" /></shortcut>
+</shortcuts>

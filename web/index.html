@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RepForge — Log fast. Get stronger.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Sans:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFF8F4;
+  --paper-2:#FFEDE6;
+  --ink:#1A1C1E;
+  --ink-2:#2F3133;
+  --ember:#9C2A00;
+  --ember-soft:#FFDBCF;
+  --ember-glow:#FFB59E;
+  --steel:#005F9E;
+  --steel-soft:#C9E6FF;
+  --brass:#6B5E00;
+  --brass-soft:#FFEBB0;
+  --surf:#F5DDD6;
+  --radius-hero:56px 12px 16px 44px;
+  --radius-hero-alt:12px 56px 44px 16px;
+  --radius-pill:999px;
+  --radius-card:32px;
+  --radius-metric:24px;
+  --radius-media:36px 12px 32px 12px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Instrument Sans", system-ui, -apple-system, sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+.mono{font-family:"Fragment Mono", monospace; letter-spacing:.08em; font-size:11px; text-transform:uppercase}
+.display{
+  font-family:"Space Grotesk", sans-serif;
+  font-weight:700;
+  letter-spacing:-.04em;
+  line-height:.86;
+}
+::selection{background:var(--ember-soft)}
+
+/* floating nav pill */
+.nav-wrap{position:sticky; top:16px; z-index:20; display:flex; justify-content:center; padding:0 16px}
+.nav-pill{
+  display:flex; align-items:center; gap:18px;
+  background:rgba(26,28,30,.92);
+  color:#EDE0DB;
+  border-radius:var(--radius-pill);
+  padding:10px 14px 10px 18px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(26,28,30,.22), 0 1px 0 rgba(255,255,255,.08) inset;
+  font-size:12px;
+}
+.nav-pill a{ text-decoration:none; opacity:.8; font-weight:600; letter-spacing:.02em}
+.nav-pill a:hover{opacity:1}
+.nav-cta{
+  background:var(--ember);
+  color:white;
+  border-radius:var(--radius-pill);
+  padding:9px 16px;
+  font-weight:800;
+  font-size:12px;
+  letter-spacing:.04em;
+  text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.nav-cta:hover{background:#7A1F00}
+
+/* HERO */
+.hero{
+  max-width:1160px; margin:32px auto 0; padding:0 24px 8px;
+  display:grid; grid-template-columns: 1.15fr .85fr; gap:28px; align-items:center;
+}
+.hero-left{position:relative}
+.kicker{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--ink); color:var(--paper);
+  border-radius:var(--radius-pill);
+  padding:7px 12px;
+  font-family:"Fragment Mono", monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+}
+.kicker i{width:7px; height:7px; border-radius:50%; background:var(--ember-glow); display:inline-block; box-shadow:0 0 10px var(--ember-glow)}
+.hero-display{
+  margin:18px 0 14px;
+  font-size: clamp(72px, 11vw, 148px);
+}
+.hero-display span{ display:block }
+.hero-display .rep{ color:var(--ink); font-weight:700; letter-spacing:-.05em; }
+.hero-display .forge{
+  color:var(--ember);
+  margin-top:-.08em;
+  position:relative;
+}
+.hero-sub{
+  font-size:18px; line-height:1.5; color: #3F4946; max-width:520px; margin:0;
+}
+.hero-sub strong{ color:var(--ink); font-weight:700}
+.hero-actions{
+  display:flex; align-items:center; gap:12px; margin-top:22px; flex-wrap:wrap;
+}
+.btn-primary{
+  background:var(--ember); color:white;
+  border-radius:var(--radius-pill);
+  padding:16px 22px;
+  font-weight:800; letter-spacing:.02em; text-decoration:none;
+  display:inline-flex; align-items:center; gap:10px;
+  box-shadow: 0 10px 24px rgba(156,42,0,.28);
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), background .2s;
+}
+.btn-primary:hover{ transform: scale(1.02) translateY(-1px); background:#8B2E00 }
+.btn-primary:active{ transform: scale(.98)}
+.btn-ghost{
+  background: var(--ink); color:var(--paper);
+  border-radius:var(--radius-pill);
+  padding:16px 18px;
+  font-weight:700; font-size:13px; letter-spacing:.02em; text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px;
+}
+
+/* hero right — expressive TODAY card */
+.hero-right{position:relative; display:flex; flex-direction:column; gap:16px}
+.today-card{
+  background:var(--ember-soft);
+  border-radius: var(--radius-hero);
+  padding:28px 26px 22px;
+  position:relative;
+  overflow:hidden;
+}
+.today-card::after{
+  content:"";
+  position:absolute; inset:auto -20px -30px auto;
+  width:140px; height:140px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, var(--ember-glow), transparent 70%);
+  opacity:.9; pointer-events:none;
+}
+.today-card .eyebrow{ font-family:"Fragment Mono", monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.6}
+.today-card h2{ font-family:"Space Grotesk",sans-serif; font-size:38px; line-height:.9; letter-spacing:-.03em; margin:10px 0 6px}
+.today-card h2 em{ font-style:normal; color:var(--ember)}
+ readiness
+.readiness{
+  display:flex; align-items:baseline; gap:10px; margin-top:6px;
+}
+.readiness strong{ font-family:"Space Grotesk",sans-serif; font-size:44px; letter-spacing:-.04em; line-height:1}
+.readiness span{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; font-weight:700; opacity:.6}
+.start-circle{
+  width:168px; height:168px; border-radius:50%;
+  background:var(--ember); color:white;
+  display:grid; place-items:center;
+  font-family:"Space Grotesk",sans-serif; font-weight:800; letter-spacing:.06em; font-size:18px;
+  box-shadow: 0 18px 40px rgba(156,42,0,.35), 0 1px 0 rgba(255,255,255,.2) inset;
+  margin: 8px auto 0;
+  cursor:pointer;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+}
+.start-circle:hover{ transform: scale(1.04) rotate(-1deg); box-shadow: 0 22px 48px rgba(156,42,0,.42)}
+.start-circle:active{ transform: scale(.96)}
+.meta-row{
+  display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+}
+.mini{
+  background: var(--surf);
+  border-radius: var(--radius-metric);
+  padding:16px;
+}
+.mini.alt{ background: var(--ember-soft)}
+.mini .label{ font-family:"Fragment Mono", monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; opacity:.6}
+.mini p{ margin:6px 0 0; font-size:13px; line-height:1.45; font-weight:600}
+.mini p span{ opacity:.6; font-weight:400}
+
+/* ticker */
+.ticker{
+  margin:18px 0 0;
+  background:var(--ink);
+  color:#EDE0DB;
+  border-radius: var(--radius-pill);
+  padding:10px 14px;
+  display:flex; align-items:center; gap:12px;
+  font-family:"Fragment Mono", monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  overflow:hidden;
+}
+.ticker .dot{ width:8px; height:8px; border-radius:50%; background:#A6F2C0; box-shadow:0 0 8px #A6F2C0; animation: pulse 1.6s infinite}
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.45}}
+
+/* BENTO */
+.bento{
+  max-width:1160px; margin:28px auto; padding:0 24px;
+  display:grid; grid-template-columns: 1.1fr .9fr 1fr; gap:14px;
+}
+.card{
+  border-radius: var(--radius-card);
+  padding:22px;
+  position:relative; overflow:hidden;
+  min-height:178px;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.card h3{ font-family:"Fragment Mono", monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; opacity:.6; margin:0}
+.card p{ margin:0}
+.card .big{ font-family:"Space Grotesk",sans-serif; font-size:26px; line-height:1; letter-spacing:-.03em; margin:10px 0 6px}
+.card .sub{ font-size:13px; line-height:1.5; opacity:.7}
+.card-ember{ background:var(--ember); color:white; border-radius: var(--radius-hero);}
+.card-ember .big{ font-size:32px}
+.card-ink{ background:var(--ink); color:#EDE0DB}
+.card-paper{ background: var(--paper-2); border:1px solid #F0D6CC}
+.card-steel{ background: var(--steel-soft); color:#001E30}
+.card-brass{ background: var(--brass-soft); color:#211B00}
+.card-surf{ background: var(--surf);}
+
+/* connected controls demo */
+.controls-demo{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:12px;
+}
+.chip{
+  background:var(--ink); color:var(--paper);
+  border-radius:var(--radius-pill);
+  padding:8px 12px;
+  font-family:"Fragment Mono", monospace; font-size:11px; letter-spacing:.04em; font-weight:600;
+}
+.chip.ghost{ background:rgba(26,28,30,.08); color:var(--ink); border:1px solid rgba(26,28,30,.12)}
+.value{
+  font-family:"Space Grotesk",sans-serif; font-size:36px; letter-spacing:-.04em; line-height:1; margin:8px 0 2px;
+}
+
+/* progress sparkline */
+.spark{
+  height:56px; margin:14px 0 6px; display:flex; align-items:end; gap:4px;
+}
+.spark i{ flex:1; border-radius:3px; background: var(--ember); display:block; min-height:6px }
+.spark i:nth-child(2){ background: #E85D3A}
+.spark i:nth-child(3){ background: #CC3E1A}
+.spark i:nth-child(4){ background: #9C2A00}
+.spark i:nth-child(5){ background: var(--steel)}
+.spark i:nth-child(6){ background: var(--ink)}
+
+/* live update */
+.live{
+  max-width:1160px; margin: 10px auto 0; padding:0 24px;
+}
+.live-card{
+  background: linear-gradient(180deg, #1A1C1E 0%, #252A2D 100%);
+  color:#EDE0DB;
+  border-radius: 36px;
+  padding:22px;
+  display:grid; grid-template-columns: 1.15fr .85fr; gap:18px; align-items:center;
+  overflow:hidden; position:relative;
+}
+.live-card::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(600px 400px at 20% 0%, rgba(255,181,158,.18), transparent 60%);
+  pointer-events:none;
+}
+.prog{ display:flex; gap:6px; margin:10px 0 14px}
+.prog i{ flex:1; height:4px; border-radius:99px; background:rgba(237,224,219,.18)}
+.prog i.on{ background: var(--ember-glow)}
+.live h3{ font-family:"Space Grotesk",sans-serif; font-size:24px; margin:6px 0 4px; letter-spacing:-.02em}
+.live .mono{ opacity:.6}
+.timer{ font-family:"Space Grotesk",sans-serif; font-size:48px; letter-spacing:-.04em; line-height:1; margin:8px 0}
+.timer small{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.6; font-family:"Fragment Mono", monospace; margin-left:6px}
+
+/* footer */
+footer{
+  max-width:1160px; margin:26px auto; padding:18px 24px 40px;
+  display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  font-family:"Fragment Mono", monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; opacity:.55;
+}
+footer a{ text-decoration:none; border-bottom:1px solid currentColor; padding-bottom:1px}
+
+@media (max-width: 860px){
+  .hero{ grid-template-columns:1fr; gap:18px}
+  .bento{ grid-template-columns:1fr}
+  .live-card{ grid-template-columns:1fr}
+  .hero-display{ font-size:84px}
+  .nav-pill{gap:10px; padding:10px 10px 10px 14px}
+  .nav-pill a.hide-m{ display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav class="nav-pill" aria-label="Primary">
+    <div class="mono" style="font-weight:700; letter-spacing:.14em">RepForge</div>
+    <a class="hide-m" href="#today">Today</a>
+    <a class="hide-m" href="#workout">Workout</a>
+    <a class="hide-m" href="#progress">Progress</a>
+    <a href="#lab">Lab</a>
+    <a class="nav-cta" href="#get">GET ON PLAY →</a>
+  </nav>
+</div>
+
+<section class="hero" id="today">
+  <div class="hero-left">
+    <div class="kicker"><i></i> Material 3 Expressive • Offline-first • On-device ML</div>
+    <h1 class="hero-display display">
+      <span class="rep">REP</span>
+      <span class="forge">FORGE</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Log your workout incredibly fast.</strong> See whether you are actually getting stronger. Let the app learn what load you can handle next — <em style="font-style:normal; background:var(--ember-soft); padding:2px 6px; border-radius:6px">calibrated, not confident.</em>
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#" id="get">Get on Google Play — Closed Testing <span aria-hidden="true">↗</span></a>
+      <a class="btn-ghost" href="#">Read the design case ↗</a>
+    </div>
+    <p class="mono" style="margin:12px 0 0; opacity:.55">Free: unlimited logging. Pro: adaptive engine, Form Lab — $3.99/mo or $29.99/yr</p>
+  </div>
+
+  <div class="hero-right">
+    <div class="today-card">
+      <div class="eyebrow">Monday • Push Day</div>
+      <h2>PUSH <em>DAY</em></h2>
+      <div class="readiness">
+        <strong>82%</strong><span>Ready<br>↑ Sleep + HR</span>
+      </div>
+      <div class="start-circle" role="button" tabindex="0" aria-label="Start workout">START</div>
+      <div class="mono" style="text-align:center; margin-top:10px; opacity:.6; font-size:9px">Tap • Haptic • Morph → Rest</div>
+    </div>
+    <div class="meta-row">
+      <div class="mini">
+        <div class="label">Last Time</div>
+        <p>80 kg × 8 @ RIR 2<br><span>Bench • 3 days ago</span></p>
+      </div>
+      <div class="mini alt">
+        <div class="label">Next Target</div>
+        <p>82.5 kg × 8<br><span>78% success • model</span></p>
+      </div>
+    </div>
+    <div class="ticker">
+      <span class="dot"></span> Live Update ready — lock screen • 01:42 rest • Next: Incline DB
+    </div>
+  </div>
+</section>
+
+<section class="bento" id="workout">
+  <div class="card card-ember" style="grid-row: span 2; min-height:360px">
+    <div>
+      <h3>Active Workout — the thesis</h3>
+      <div class="value">82.5 KG × 8</div>
+      <p class="sub" style="opacity:.9">Barbell Bench Press • Previous 80×8 @ RIR 2 • Warm-up: 40×12 → 60×8 → 70×5</p>
+    </div>
+    <div>
+      <div class="controls-demo">
+        <span class="chip">−5</span><span class="chip">−2.5</span>
+        <span class="chip ghost">long-press for keyboard</span>
+        <span class="chip">+2.5</span><span class="chip">+5</span>
+      </div>
+      <div style="margin-top:14px; background:white; color:var(--ink); border-radius:18px; padding:14px; display:flex; justify-content:space-between; align-items:center">
+        <span class="mono" style="font-size:10px">Set</span><span class="mono" style="font-size:10px">Load</span><span class="mono" style="font-size:10px">Reps</span><span class="mono" style="font-size:10px">RIR</span>
+      </div>
+      <div style="margin-top:8px; background:rgba(255,255,255,.14); border-radius:999px; padding:12px 18px; text-align:center; font-weight:800; letter-spacing:.06em; backdrop-filter: blur(8px)">COMPLETE SET</div>
+    </div>
+  </div>
+
+  <div class="card card-ink">
+    <div>
+      <h3 style="color:#A6F2C0">Rest — hero, not card</h3>
+      <div class="timer">01:42 <small>remaining</small></div>
+      <p class="sub" style="color:#D7C2BC">Pulse → haptic → NEXT. −15 • SKIP • +15. Plate math lives here.</p>
+    </div>
+    <div class="prog"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="card card-steel">
+    <div>
+      <h3>On-device ML</h3>
+      <div class="big">P(target)</div>
+      <p class="sub">Not “AI creates perfect program.” Logistic → LightGBM, calibrated. Brier, not vibes.</p>
+    </div>
+    <p class="mono" style="margin-top:12px">82.5×8 — 78% — trend ↑ fatigue →</p>
+  </div>
+
+  <div class="card card-paper" id="progress">
+    <div>
+      <h3>Progress — sparkline, not Power BI</h3>
+      <div style="display:flex; align-items:baseline; gap:10px">
+        <span class="value" style="font-size:42px">94.3 KG</span><span class="mono" style="opacity:.6">↑ 7.2% • 12w</span>
+      </div>
+      <p class="mono" style="opacity:.55">Est 1RM • Volume • Reps • Load</p>
+    </div>
+    <div class="spark" aria-hidden="true">
+      <i style="height:22px"></i><i style="height:34px"></i><i style="height:28px"></i><i style="height:48px"></i><i style="height:56px"></i><i style="height:42px"></i>
+    </div>
+  </div>
+
+  <div class="card card-brass">
+    <div>
+      <h3>Form Lab — Beta</h3>
+      <div class="big">CameraX + ML Kit</div>
+      <p class="sub">Rep counting on-device. No rep is uploaded. Privacy first, then coaching.</p>
+    </div>
+    <p class="mono">Beta — not medical advice</p>
+  </div>
+
+  <div class="card card-surf" style="border-radius: var(--radius-media);">
+    <div>
+      <h3>Offline-first</h3>
+      <div class="big">No signal, no problem</div>
+      <p class="sub">Room is authoritative during training. Sync queue → Firestore when back.</p>
+    </div>
+    <p class="mono">WorkManager • DataStore • Room</p>
+  </div>
+</section>
+
+<section class="live" id="lab">
+  <div class="live-card">
+    <div>
+      <p class="mono" style="color:var(--ember-glow)">Android 16+ Live Update • Promoted Ongoing • Health Connect</p>
+      <h3>LIFT — Push Day — Bench 3/4 → Rest — 01:22 → Next Set</h3>
+      <p class="mono" style="color:#D7C2BC; text-transform:none; letter-spacing:.02em; font-size:11px">Segments = per-exercise, points = per-set, dumbbell tracker. Dismiss → suppress 5 min. Falls back to standard ongoing.</p>
+      <div class="prog" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap">
+        <span class="chip" style="background:var(--ember); color:white">NEXT</span>
+        <span class="chip" style="background:rgba(255,255,255,.1); color:#EDE0DB; border:1px solid rgba(255,255,255,.12)">END</span>
+        <span class="chip" style="background:rgba(255,255,255,.08); color:#D7C2BC">+15s</span>
+        <span class="chip" style="background:rgba(255,255,255,.08); color:#D7C2BC">SKIP</span>
+      </div>
+    </div>
+    <div style="background: rgba(255,255,255,.06); border-radius:24px; padding:18px; border:1px solid rgba(255,255,255,.08)">
+      <p class="mono" style="opacity:.6">Health • opt-in additive</p>
+      <p style="margin:8px 0 0; font-weight:700">Weight, sleep, HR, sessions. Write workouts back. No medical claims. Wear: Bench 82.5×8 [COMPLETE] / REST 1:34</p>
+      <p class="mono" style="margin-top:10px; opacity:.6">Wear Compose + Health Services — later</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>RepForge • MIT • <a href="#">Privacy</a> • <a href="#">Terms</a> • <a href="#">Changelog</a> • GitHub Pages • Play Billing verified</div>
+  <div>Shapes are roles: Hero 56/12, Metric 24, Media 36/12, Nav pill, Timer 40</div>
+</footer>
+
+<script>
+const start = document.querySelector('.start-circle');
+if(start){
+  start.addEventListener('click', ()=> {
+    start.animate([
+      {transform:'scale(1)'},{transform:'scale(.92)'},{transform:'scale(1.04)'},{transform:'scale(1)'}
+    ],{duration:520, easing:'cubic-bezier(.34,1.56,.64,1)'});
+    if(navigator.vibrate) navigator.vibrate(20);
+  });
+}
+</script>
+</body>
+</html>
