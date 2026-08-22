@@ -14,8 +14,8 @@ android {
         applicationId = "com.repforge.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = (findProperty("appVersionCode") as String?)?.toInt() ?: 1
+        versionName = (findProperty("appVersionName") as String?) ?: "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }

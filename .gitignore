@@ -16,3 +16,6 @@ keystore.properties
 # Python bytecode
 __pycache__/
 *.pyc
+
+# generated CDN manifests (CI artifacts)
+tools/asset-cdn/cdn-asset-manifest.json
