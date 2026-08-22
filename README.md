@@ -1,5 +1,12 @@
 # RepForge — Material 3 Expressive Strength Training
 
+[![PR](https://github.com/ahmed/RepForge/actions/workflows/pr.yml/badge.svg)](https://github.com/ahmed/RepForge/actions/workflows/pr.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF.svg?logo=kotlin)
+![minSdk](https://img.shields.io/badge/minSdk-28-34A853.svg)
+![targetSdk](https://img.shields.io/badge/targetSdk-36-34A853.svg)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 > **Log your workout incredibly fast. See whether you are actually getting stronger. Let the app learn what load you can handle next.**
 
 Offline-first Android strength training with on-device progression, Health Connect, and a genuine Material 3 Expressive system — not rounded cards.
@@ -127,6 +134,22 @@ No ads in V1 — and never during active workout/rest/form camera.
 4. Run on emulator (API 34+): Today → START → log set → see Rest morph → Progress
 5. `git init && git add . && git commit -m "feat: RepForge scaffold — M3 Expressive + offline-first + progression engine"` → push → enable GitHub Pages for `web/` landing
 
+## Distribution
+
+Planned, not live. RepForge is a pre-alpha scaffold, so nothing below is
+published yet.
+
+- **Google Play:** internal testing track planned once the release pipeline
+  lands (AAB signing, store listing, data-safety declarations). Tracked by the
+  release/store-listing work in the project plan.
+- **F-Droid:** planned. Requires fully reproducible builds and a dependency
+  review before submission; not started.
+- **Privacy policy:** summary in [PRIVACY.md](PRIVACY.md); the canonical
+  hosted policy ships with the store-distribution work and will live at
+  https://repforge.app/privacy.
+- **Account deletion:** in-app (Settings → account deletion) and on the web at
+  https://repforge.app/delete, per Play policy requirements.
+
 ## Measured claims (fill with real numbers, not invented)
 
 ```
@@ -140,4 +163,4 @@ Screenshot coverage   ... screens
 
 ## License
 
-MIT — do not use Health Connect data for medical diagnosis.
+Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). Do not use Health Connect data for medical diagnosis.
