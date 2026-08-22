@@ -12,3 +12,7 @@ keystore.properties
 
 # keep uv lock
 !ml/uv.lock
+
+# Python bytecode
+__pycache__/
+*.pyc
