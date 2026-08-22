@@ -40,7 +40,7 @@ fun RepForgeNavIconView(
     )
     val scale by animateFloatAsState(
         targetValue = if (selected) 1.12f else 1f,
-        animationSpec = RepForgeMotion.BouncySpring as FiniteAnimationSpec<Float>,
+        animationSpec = RepForgeMotion.BouncySpring,
         label = "iconScale"
     )
     Canvas(modifier = modifier) {
@@ -150,7 +150,7 @@ fun AnimatedDumbbellIcon(
 ) {
     val lift by animateFloatAsState(
         targetValue = if (animating) 1f else 0f,
-        animationSpec = if (animating) tween(380, easing = RepForgeMotion.ExpressiveEasing) else snap(),
+        animationSpec = if (animating) RepForgeMotion.standard() else snap(),
         label = "lift"
     )
     Canvas(modifier) {
@@ -171,7 +171,7 @@ fun AnimatedDumbbellIcon(
 fun AnimatedCheckIcon(modifier: Modifier = Modifier.size(22.dp), tint: Color, checked: Boolean) {
     val progress by animateFloatAsState(
         targetValue = if (checked) 1f else 0f,
-        animationSpec = tween(420, easing = RepForgeMotion.ExpressiveEasing),
+        animationSpec = RepForgeMotion.quick(),
         label = "check"
     )
     Canvas(modifier) {

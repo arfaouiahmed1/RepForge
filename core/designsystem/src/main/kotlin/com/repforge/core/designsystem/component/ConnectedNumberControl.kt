@@ -50,6 +50,7 @@ fun ConnectedNumberControl(
 private fun ControlChip(label: String, onClick: () -> Unit, emphasized: Boolean = false) {
     Box(
         modifier = Modifier
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
             .clip(RepForgeShapes.Pill)
             .background(if (emphasized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)

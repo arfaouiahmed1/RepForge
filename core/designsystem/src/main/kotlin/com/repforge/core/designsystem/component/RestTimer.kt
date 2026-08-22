@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import com.repforge.core.designsystem.token.RepForgeMotion
 import com.repforge.core.designsystem.token.RepForgeShapes
 import com.repforge.core.designsystem.token.RepForgeTypeRoles
 import kotlinx.coroutines.delay
@@ -37,7 +38,9 @@ fun RestTimer(
     val infiniteTransition = rememberInfiniteTransition(label = "restPulse")
     val pulse by infiniteTransition.animateFloat(
         initialValue = 1f, targetValue = 1.03f,
-        animationSpec = infiniteRepeatable(tween(900, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        // Ambient repeating pulse — duration-based spec required by infiniteRepeatable
+        // (springs cannot reverse-repeat); uses brand expressive easing per MD3 carve-out.
+        animationSpec = infiniteRepeatable(tween(900, easing = RepForgeMotion.ExpressiveEasing), RepeatMode.Reverse),
         label = "pulse"
     )
 
@@ -94,6 +97,7 @@ fun RestTimer(
 private fun RestChip(label: String, onClick: () -> Unit, emphasized: Boolean = false) {
     Box(
         modifier = Modifier
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
             .clip(RepForgeShapes.Pill)
             .background(if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
             .clickable(onClick = onClick)

@@ -51,7 +51,7 @@ fun MorphingSetButton(
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                 onComplete()
             }
-            .animateContentSize(animationSpec = RepForgeMotion.expressiveTween(duration = 420))
+            .animateContentSize(animationSpec = RepForgeMotion.standard())
             .padding(horizontal = 36.dp, vertical = 22.dp),
         contentAlignment = Alignment.Center
     ) {

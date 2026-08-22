@@ -112,9 +112,17 @@ object RepForgeTypeRoles {
 val RepForgeTypography = Typography(
     displayLarge = RepForgeTypeRoles.DisplayHeroLarge,
     displayMedium = RepForgeTypeRoles.DisplayHero,
+    displaySmall = RepForgeTypeRoles.DisplayHero.copy(fontSize = 44.sp, lineHeight = 46.sp, letterSpacing = (-1.2).sp),
     headlineLarge = RepForgeTypeRoles.HeadlineLoud,
     headlineMedium = RepForgeTypeRoles.MetricLarge,
+    headlineSmall = RepForgeTypeRoles.HeadlineLoud.copy(fontSize = 24.sp, lineHeight = 28.sp),
     titleLarge = RepForgeTypeRoles.MetricMedium,
+    titleMedium = RepForgeTypeRoles.LabelExpressive.copy(fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.15.sp),
+    titleSmall = RepForgeTypeRoles.LabelExpressive.copy(fontSize = 14.sp, lineHeight = 20.sp),
+    bodyLarge = RepForgeTypeRoles.BodySupport.copy(fontSize = 16.sp, lineHeight = 24.sp),
     bodyMedium = RepForgeTypeRoles.BodySupport,
+    bodySmall = RepForgeTypeRoles.BodySupport.copy(fontSize = 12.sp, lineHeight = 16.sp),
     labelLarge = RepForgeTypeRoles.LabelExpressive,
+    labelMedium = RepForgeTypeRoles.LabelSmall.copy(fontSize = 12.sp, lineHeight = 16.sp),
+    labelSmall = RepForgeTypeRoles.LabelSmall,
 )
