@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Health Connect -->
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
@@ -8,11 +9,13 @@
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
     <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
 
-    <!-- Live Update — promoted ongoing workout (Android 16+) + fallback -->
+    <!-- Live Update ï¿½ promoted ongoing workout (Android 16+) + fallback -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <!-- Required companion permission for foregroundServiceType=health (lint ForegroundServicePermission) -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <!-- Camera for Form Lab -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -37,6 +40,19 @@
         </activity>
         <receiver android:name="com.repforge.core.notifications.liveupdate.LiveWorkoutActions" android:exported="false" />
         <service android:name=".WorkoutForegroundService" android:exported="false" android:foregroundServiceType="health" />
+
+        <!-- On-demand WorkManager init via Configuration.Provider in RepForgeApp:
+             remove the library-merged eager initializer (lint RemoveWorkManagerInitializer) -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 </manifest>
 
