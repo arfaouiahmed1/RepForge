@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="repforge_ember">#9C2A00</color>
+    <color name="repforge_ember_glow">#FFB59E</color>
+    <color name="repforge_forge">#1A1C1E</color>
+    <color name="repforge_paper">#FFF8F4</color>
+    <color name="repforge_paper_raised">#FFDBCF</color>
+</resources>

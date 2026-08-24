@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ember">#FF3B30</color>
-    <color name="paper">#FFFBFE</color>
-    <color name="forge">#1A1C1E</color>
+    <color name="ember">@color/repforge_ember</color>
+    <color name="paper">@color/repforge_paper</color>
+    <color name="forge">@color/repforge_forge</color>
 </resources>

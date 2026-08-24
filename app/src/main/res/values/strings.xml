@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RepForge</string>
+    <string name="launch_loading_eyebrow">HEATING THE FORGE</string>
+    <string name="launch_loading_message">Preparing your local training space</string>
+    <string name="launch_loading_description">RepForge loading</string>
     <string name="shortcut_today_short">Start workout</string>
     <string name="shortcut_today_long">Start Push Day</string>
     <string name="shortcut_log_short">Log weight</string>

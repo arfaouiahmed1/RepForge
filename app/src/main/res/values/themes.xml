@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.RepForge" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.RepForge.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/repforge_forge</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_repforge_mark</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/repforge_forge</item>
+        <item name="postSplashScreenTheme">@style/Theme.RepForge</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
 </resources>
