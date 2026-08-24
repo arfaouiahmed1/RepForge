@@ -1,0 +1,94 @@
+{
+  "cohort_brier_regression": {
+    "cold_start": 0.025406342589768205,
+    "warm": 0.0027154417420145053
+  },
+  "cohort_gate_passed": true,
+  "data_provenance": "deterministic_synthetic_fallback",
+  "generated_at": "2026-08-23T00:00:00Z",
+  "mobile_size_gate_passed": true,
+  "mobile_size_limit_bytes": 5242880,
+  "models": {
+    "hist_gradient_boosting": {
+      "temporal": {
+        "brier": 0.07537229227371628,
+        "ece": 0.015798788660466006,
+        "logloss": 0.2818014846808868,
+        "pr_auc": 0.9418835353378071,
+        "roc_auc": 0.5954922473047618,
+        "samples": 864
+      },
+      "user_holdout": {
+        "brier": 0.10144565063195304,
+        "ece": 0.023083032543629305,
+        "logloss": 0.3473013198845757,
+        "pr_auc": 0.9382044893258205,
+        "roc_auc": 0.692467958835785,
+        "samples": 1152
+      },
+      "user_holdout:cold_start": {
+        "brier": 0.08692928638522664,
+        "ece": 0.037933135751047405,
+        "logloss": 0.31661778095122056,
+        "pr_auc": 0.9299497886119321,
+        "roc_auc": 0.5689655172413793,
+        "samples": 192
+      },
+      "user_holdout:warm": {
+        "brier": 0.1043489234812983,
+        "ece": 0.02820439009508835,
+        "logloss": 0.3534380276712467,
+        "pr_auc": 0.9401015254064433,
+        "roc_auc": 0.7106584685918544,
+        "samples": 960
+      }
+    },
+    "logistic_regression": {
+      "temporal": {
+        "brier": 0.07661997950065677,
+        "ece": 0.020477465632011332,
+        "logloss": 0.2852440760497654,
+        "pr_auc": 0.9450238713934298,
+        "roc_auc": 0.6027920359483508,
+        "samples": 864
+      },
+      "user_holdout": {
+        "brier": 0.10085118987120001,
+        "ece": 0.022235799940380066,
+        "logloss": 0.3442978244557174,
+        "pr_auc": 0.9403043395449734,
+        "roc_auc": 0.7024503511024125,
+        "samples": 1152
+      },
+      "user_holdout:cold_start": {
+        "brier": 0.08477545220334591,
+        "ece": 0.01741558851805268,
+        "logloss": 0.3027546489254174,
+        "pr_auc": 0.9484490651385166,
+        "roc_auc": 0.6507024265644955,
+        "samples": 192
+      },
+      "user_holdout:warm": {
+        "brier": 0.10406633740477082,
+        "ece": 0.02674989519539316,
+        "logloss": 0.35260645956177744,
+        "pr_auc": 0.9386940148187116,
+        "roc_auc": 0.7102213674466494,
+        "samples": 960
+      }
+    }
+  },
+  "rows": 5760,
+  "selected_model": "logistic_regression",
+  "selection_reason": "logistic retained: challenger did not improve Brier on both temporal and unseen-user holdouts within cohort gates",
+  "serialized_bytes": {
+    "hist_gradient_boosting.pkl": 102002,
+    "progression_logistic_v1.json": 1596
+  },
+  "split_rows": {
+    "calibration": 960,
+    "temporal_holdout": 864,
+    "train": 2784,
+    "user_holdout": 1152
+  }
+}
