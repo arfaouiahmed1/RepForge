@@ -1,0 +1,48 @@
+=== RepForge task-6 backend build fix ===
+Date: 2026-08-22T18:58:51.7237863+01:00  Worker: backend-finisher
+CMD: $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'; .\gradlew.bat -p backend clean build --console=plain
+.\gradlew.bat : WARNING: A restricted method in java.lang.System has been called
+At line:1 char:397
++ ... ntent $out; .\gradlew.bat -p backend clean build --console=plain 2>&1 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WARNING: A rest...has been called:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an 
+unnamed module (file:/C:/Users/ahmed/.gradle/wrapper/dists/gradle-9.5.0-bin/bvnork1r7n8i6kp5cnkibsc9q/gradle-9.5.0/lib/
+native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :clean
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources NO-SOURCE
+> Task :processTestResources NO-SOURCE
+
+> Task :compileKotlin
+w: file:///C:/Users/ahmed/Desktop/Personal%20Projects/RepForge/backend/src/main/kotlin/com/repforge/backend/auth/FirebaseAuth.kt:6:72 'interface Principal : Any' is deprecated. This interface can be safely removed.
+w: file:///C:/Users/ahmed/Desktop/Personal%20Projects/RepForge/backend/src/main/kotlin/com/repforge/backend/auth/TokenVerifier.kt:59:39 'constructor(): FirebaseOptions.Builder' is deprecated. Deprecated in Java.
+
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar
+> Task :startScripts
+> Task :distTar
+> Task :distZip
+> Task :assemble
+> Task :compileTestKotlin
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test
+> Task :check
+> Task :build
+
+[Incubating] Problems report is available at: file:///C:/Users/ahmed/Desktop/Personal%20Projects/RepForge/backend/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 15s
+8 actionable tasks: 8 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.5.0/userguide/configuration_cache_enabling.html
+
+CMD: JUnit XML summary from backend/build/test-results/test/
+com.repforge.backend.BackendRoutesTest tests=4 failures=0 errors=0 skipped=0 time=1.37s
+

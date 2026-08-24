@@ -1,0 +1,62 @@
+# Task 57 — GitHub community health + license + README distribution readiness
+# Date: 2026-08-22
+# Scope: root docs only (+ .github/CODEOWNERS). No app source, gradle, backend/, fastlane/, or .github/workflows/ changes.
+
+## Files created (ls evidence)
+
+    Name                    Length
+    ----                    ------
+    LICENSE                 11357   (full Apache-2.0 text)
+    NOTICE                   1738   (Filament / SceneView / Health Connect SDK / Google Sans Flex attributions)
+    CONTRIBUTING.md          4469   (JDK 17, Android Studio, uv, optional Blender; module overview; type(scope): summary; PR checklist)
+    CODE_OF_CONDUCT.md       5237   (Contributor Covenant v2.1)
+    SECURITY.md              2323   (<security@repforge.app>, 90-day coordinated disclosure, supported versions table: main + latest release)
+    PRIVACY.md               2813   (local-first, Health Connect opt-in granular, no health data to ads/analytics, deletion in-app + https://repforge.app/delete)
+    THIRD_PARTY_NOTICES.md   3473   (per-dependency sections ready for license scan fill-in)
+    .github/CODEOWNERS        112   (* @ahmed)
+
+## README.md diff summary
+
+git diff --stat -- README.md:
+    README.md | 25 ++++++++++++++++++++++++-
+    1 file changed, 24 insertions(+), 1 deletion(-)
+
+Additions:
+1. Badge row inserted directly under the H1 title (6 badges):
+   - Build: [![PR]](https://github.com/ahmed/RepForge/actions/workflows/pr.yml) — workflow name "PR" read from .github/workflows/pr.yml line 1 (`name: PR`)
+   - License: Apache-2.0 -> LICENSE
+   - Kotlin 2.4.10 (verified in gradle/libs.versions.toml line 3)
+   - minSdk 26 (verified in app/build.gradle.kts line 16)
+   - targetSdk 36 (verified in app/build.gradle.kts line 17)
+   - PRs welcome -> CONTRIBUTING.md
+2. New "## Distribution" section before "## Measured claims": Play internal beta = planned,
+   F-Droid = planned/not started, privacy summary link, deletion links (in-app + https://repforge.app/delete).
+
+Modification (1 line, flagged deviation):
+- License section said "MIT" which contradicted the deliberate Apache-2.0 decision and the new
+  LICENSE file. Corrected to "Apache-2.0 — see LICENSE and NOTICE." The Health Connect medical
+  disclaimer sentence was preserved verbatim. This is the ONLY edit to existing README content;
+  all other sections untouched per task constraints.
+
+## Verification
+
+- Get-Content LICENSE | Select-Object -First 3 -> "Apache License / Version 2.0, January 2004 / http://www.apache.org/licenses/" PASS
+- Badge count in README: 6 (requirement >= 4) PASS
+- TODO/TBD scan across the 7 new doc files: 0 hits PASS
+- Placeholders used are angle-bracket domain/email/copyright forms only:
+  <copyright holder>, <security@repforge.app>, <conduct@repforge.app>, <privacy@repforge.app>,
+  <fill remaining transitive artifacts from license scan>, <confirm exact artifact list and license headers from license scan>
+
+## Truthfulness notes (claims kept accurate TODAY)
+
+- Task brief requested a "minSdk 28" badge; actual app/build.gradle.kts has minSdk = 26.
+  Badge says 26. Nightly CI matrix tests API 28/34/36 but that does not change minSdk.
+- Play internal beta and F-Droid are stated as planned, not live (store work belongs to todo 54/58).
+- PRIVACY.md explicitly marked as plain-language summary; canonical hosted policy ships with
+  todo 54 store-distribution work.
+- No metrics or invented numbers anywhere in the new docs.
+
+## Not touched (per constraints)
+
+.github/workflows/* (todo 47), fastlane/ (todo 58), app source, gradle files, backend/.
+[2026-08-22] github-health-finisher: account-deletion URL verified in README.md Distribution section - line 151 'https://repforge.app/delete' adjacent to privacy URL line 149 'https://repforge.app/privacy'; Select-String 'repforge.app/delete' hit 1 (README.md:151), 'repforge.app/privacy' hit 1 (README.md:149). Acceptance gap closed.

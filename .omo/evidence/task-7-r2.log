@@ -1,0 +1,48 @@
+# Task 7 - Cloudflare R2 asset CDN configuration package (2026-08-22)
+# Scope: tools/asset-cdn/** + this evidence log. Nothing outside touched.
+# NO CLOUD RESOURCES WERE CREATED: no R2 bucket, no custom domain, no cache
+# rules exist yet. All cloud steps are documented as manual user steps in
+# tools/asset-cdn/README.md (user has no Cloudflare account yet).
+
+## Files created (all new, nothing existed before)
+tools/asset-cdn/asset-manifest.schema.json      (3724 bytes) - JSON Schema draft 2020-12, assetManifest v17
+tools/asset-cdn/model-manifest.schema.json      (2742 bytes) - JSON Schema draft 2020-12, modelManifest per blueprint p.769
+tools/asset-cdn/validate_manifest.py            (12352 bytes) - stdlib-only validator, exit 0 valid / 1 invalid / 2 usage
+tools/asset-cdn/fixtures/valid-manifest.json    (945 bytes)  - 2 assets: bench_press v3, squat v1
+tools/asset-cdn/fixtures/corrupt-hash-manifest.json (528 bytes) - bad sha256 ('...66a6zz') + glbPath hash mismatch
+tools/asset-cdn/wrangler.toml.example           (2654 bytes) - bucket repforge-assets, binding ASSETS, custom domain assets.repforge.app, cache-rules comment block
+tools/asset-cdn/README.md                       (7038 bytes) - exact manual setup steps, CI upload pattern, cost note
+
+## Fixture hash provenance (real SHA-256 of fixture placeholder bytes)
+$ uv run python -c "import hashlib; blobs = {'bench_glb': b'RepForge fixture GLB bench_press v3', 'squat_glb': b'RepForge fixture GLB squat v1', 'bench_thumb': b'thumb512 bench_press v3', 'bench_hero': b'hero bench_press v3', 'squat_thumb': b'thumb512 squat v1', 'squat_hero': b'hero squat v1'}; [print(k, hashlib.sha256(v).hexdigest()) for k, v in blobs.items()]"
+bench_glb 05c38affb17e5e2733917879bfcc27dcec43dcdadc0f67cfc5e1ae6a6b66a66f
+squat_glb 758fd373e9f2aed1e85edd24a786547877c1983ca3fc7b6441eb667dbac9c496
+bench_thumb 18febe7022ea19ce55445c544c766f6594acbf568b4bbee9f3c08d91211d9023
+bench_hero ad7935be9e607e11c4d27bc5bceb46717379f970926c2486a6b7fd8d98e582d2
+squat_thumb 7aec18dbac6a2c5e6aafe7966f994cdbc28f9566f4050ba08abec89fd57d5cb2
+squat_hero c2777fd623d76de218ff771d94ba23662bd6d1ef9e2fa8d402507df7f96abd62
+
+## REQUIRED RUN 1 - validator on VALID fixture (cwd = repo root)
+$ uv run python tools/asset-cdn/validate_manifest.py tools/asset-cdn/fixtures/valid-manifest.json
+OK tools/asset-cdn/fixtures/valid-manifest.json (assetManifest): 2 entries validated
+EXIT=0
+
+## REQUIRED RUN 2 - validator on CORRUPT fixture (cwd = repo root)
+$ uv run python tools/asset-cdn/validate_manifest.py tools/asset-cdn/fixtures/corrupt-hash-manifest.json
+FAIL tools/asset-cdn/fixtures/corrupt-hash-manifest.json (assetManifest): 2 problem(s)
+  - assets[0].sha256: must be 64 lowercase hex chars (got '05c38affb17e5e2733917879bfcc27dcec43dcdadc0f67cfc5e1ae6a6b66a6zz')
+  - assets[0].glbPath: embedded hash 'deadbeefcafe' does not match first 12 chars of sha256 ('05c38affb17e')
+EXIT=1
+
+## Extra smoke test - modelManifest branch (temp file OUTSIDE the repo)
+$ uv run python tools/asset-cdn/validate_manifest.py "$env:TEMP\opencode\model-manifest-smoke.json"
+OK C:\Users\ahmed\AppData\Local\Temp\opencode\model-manifest-smoke.json (modelManifest): 1 entries validated
+EXIT=0
+
+## Acceptance mapping
+- assetManifest v17 schema: manifestVersion const 17, generatedAt RFC3339, assets[] with exerciseId/glbPath/thumb512Path/heroPath/sha256/sizeBytes/version/draco; glbPath pattern enforces '/assets/exercises/<id>/movement.v<N>.<sha256-12>.glb'
+- modelManifest schema (blueprint p.769): manifestVersion, models[]{name, version, schemaVersion, minAppVersion, sha256, url, rollout}
+- Validator checks: required fields, sha256 hex format, content-addressed path == sha256[:12], version int>=1 (+ cross-field version-in-path, dir==exerciseId, unique ids); exit 0/1 with reasons
+- Cache rules documented in wrangler.toml.example comment block: manifests 'public,max-age=60'; hashed GLBs/WebPs 'public,max-age=31536000,immutable'
+- README documents wrangler install, account+zone signup, bucket create, custom domain connect, cache rule clicks, R2 API token for CI, CI upload pattern, and cost note (10GB free tier, ~<1GB expected footprint, zero egress)
+- NOT DONE BY DESIGN (requires user account): bucket creation, domain connection, cache rule creation, any upload. Downstream todos 25 (upload pipeline) and 27 (client SHA256 validation) consume these schemas.
