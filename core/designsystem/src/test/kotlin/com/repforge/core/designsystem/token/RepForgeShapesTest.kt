@@ -1,6 +1,5 @@
-package com.repforge.core.model
+package com.repforge.core.designsystem.token
 
-import com.repforge.core.designsystem.token.RepForgeShapes
 import org.junit.Assert.*
 import org.junit.Test
 

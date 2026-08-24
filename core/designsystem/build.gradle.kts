@@ -10,6 +10,7 @@ android {
     buildFeatures { compose = true }
 }
 dependencies {
+    testImplementation(libs.junit)
     val bom = platform(libs.androidx.compose.bom)
     implementation(bom)
     implementation(libs.androidx.compose.ui)
@@ -18,6 +19,8 @@ dependencies {
     implementation(libs.androidx.compose.material3.windowSize)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.icons.material.symbols.rounded)
+    implementation(libs.icons.material.symbols.rounded.filled)
 }
 
 kotlin {

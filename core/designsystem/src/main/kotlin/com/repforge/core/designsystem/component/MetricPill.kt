@@ -57,6 +57,7 @@ fun ProgressHero(
     estimated1RM: String,
     delta: String,
     modifier: Modifier = Modifier,
+    valueLabel: String = "estimated 1RM",
 ) {
     Column(
         modifier = modifier
@@ -65,11 +66,10 @@ fun ProgressHero(
             .padding(horizontal = 26.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(exercise.uppercase(), style = RepForgeTypeRoles.LabelExpressive, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.68f))
+        Text(exercise.uppercase(), style = RepForgeTypeRoles.LabelExpressive, color = MaterialTheme.colorScheme.onPrimaryContainer)
         Text(estimated1RM, style = RepForgeTypeRoles.MetricLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        Text("estimated 1RM", style = RepForgeTypeRoles.LabelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.62f))
+        Text(valueLabel, style = RepForgeTypeRoles.LabelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
         Spacer(modifier = Modifier.height(6.dp))
         Text(delta, style = RepForgeTypeRoles.LabelExpressive, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        Text("12 weeks", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.68f))
     }
 }

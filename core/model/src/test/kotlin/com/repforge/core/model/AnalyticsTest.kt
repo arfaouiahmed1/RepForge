@@ -51,4 +51,47 @@ class AnalyticsTest {
         val vt = volumeTrend(vols)
         assertNotNull(vt)
     }
+
+    @Test fun `rolling daily max takes best set per day`() {
+        val day1 = 10L * DAY_MILLIS
+        val day2 = 11L * DAY_MILLIS
+        val series = rollingDailyMax1RM(
+            listOf(
+                SetPoint(day1, 80.0, 5),   // e1RM 93.33
+                SetPoint(day1, 100.0, 5),  // e1RM 116.66 <- max
+                SetPoint(day2, 90.0, 5),   // e1RM 105.0
+            )
+        )
+        assertEquals(2, series.size)
+        assertEquals(116.66, series[0], 0.01)
+        assertEquals(105.0, series[1], 0.01)
+    }
+
+    @Test fun `rolling daily max orders days chronologically regardless of input order`() {
+        val day1 = 10L * DAY_MILLIS
+        val day2 = 11L * DAY_MILLIS
+        val series = rollingDailyMax1RM(
+            listOf(
+                SetPoint(day2 + 3600_000L, 95.0, 3),
+                SetPoint(day1, 70.0, 8),
+            )
+        )
+        assertEquals(2, series.size)
+        assertTrue(series[0] < series[1])
+    }
+
+    @Test fun `rolling daily max empty input yields empty series`() {
+        assertTrue(rollingDailyMax1RM(emptyList()).isEmpty())
+    }
+
+    @Test fun `deltaPercent guards degenerate series`() {
+        assertEquals(0.0, deltaPercent(emptyList()), 0.0)
+        assertEquals(0.0, deltaPercent(listOf(50.0)), 0.0)
+        assertEquals(0.0, deltaPercent(listOf(0.0, 999.0)), 0.0)
+    }
+
+    @Test fun `deltaPercent computes first to last change`() {
+        assertEquals(10.0, deltaPercent(listOf(100.0, 105.0, 110.0)), 0.001)
+        assertEquals(-20.0, deltaPercent(listOf(100.0, 80.0)), 0.001)
+    }
 }
