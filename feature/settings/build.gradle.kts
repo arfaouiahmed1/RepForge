@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:data"))
     implementation(project(":core:analytics"))
+    implementation(project(":core:datastore"))
     val bom = platform(libs.androidx.compose.bom)
     implementation(bom)
     implementation(libs.androidx.compose.ui)

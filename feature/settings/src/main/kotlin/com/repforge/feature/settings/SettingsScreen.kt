@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -17,8 +18,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.repforge.core.data.repository.AchievementRepository
 import com.repforge.core.data.repository.ProfileRepository
+import com.repforge.core.datastore.PreferencesDataSource
 import com.repforge.core.designsystem.token.RepForgeShapes
 import com.repforge.core.designsystem.token.RepForgeTypeRoles
+import com.repforge.core.model.ThemeMode
 import com.repforge.core.model.UserProfile
 import com.repforge.core.notifications.ReminderNotifier
 import com.repforge.core.notifications.ReminderScheduler
@@ -34,10 +37,23 @@ class SettingsViewModel @Inject constructor(
     val achievementRepo: AchievementRepository,
     private val scheduler: ReminderScheduler,
     private val notifier: ReminderNotifier,
+    private val preferencesDataSource: PreferencesDataSource,
 ) : ViewModel() {
     val profile = profileRepo.observeProfile().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val body = profileRepo.observeLatestBody().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val achievements = achievementRepo.observe().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val themeMode = preferencesDataSource.themeMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeMode.SYSTEM)
+    val dynamicColor = preferencesDataSource.dynamicColor
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun setThemeMode(mode: ThemeMode) {
+        viewModelScope.launch { preferencesDataSource.setThemeMode(mode) }
+    }
+
+    fun setDynamicColor(enabled: Boolean) {
+        viewModelScope.launch { preferencesDataSource.setDynamicColor(enabled) }
+    }
 
     fun saveProfile(displayName: String, heightCm: Double?, weightKg: Double?) {
         viewModelScope.launch {
@@ -69,8 +85,15 @@ fun SettingsRoute(
     val profile by viewModel.profile.collectAsState()
     val body by viewModel.body.collectAsState()
     val ach by viewModel.achievements.collectAsState()
+    val themeMode by viewModel.themeMode.collectAsState()
+    val dynamicColor by viewModel.dynamicColor.collectAsState()
     SettingsScreen(
         profile = profile, bodyBmi = body?.bmi ?: profile?.bmi(), achievementsUnlocked = ach.count { it.isUnlocked },
+        achievementTitles = ach.filter { it.isUnlocked }.map { it.title },
+        themeMode = themeMode,
+        dynamicColor = dynamicColor,
+        onThemeMode = viewModel::setThemeMode,
+        onDynamicColor = viewModel::setDynamicColor,
         onSave = viewModel::saveProfile,
         onTestRest = viewModel::testRest, onTestReminder = viewModel::testReminder, onTestAchievement = viewModel::testAchievement,
         onEnableDaily = viewModel::enableDaily, onEnableBody = viewModel::enableBodyWeekly, onEnableWeekly = viewModel::enableWeeklySummary,
@@ -78,11 +101,17 @@ fun SettingsRoute(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     profile: UserProfile?,
     bodyBmi: Double?,
     achievementsUnlocked: Int,
+    achievementTitles: List<String>,
+    themeMode: ThemeMode,
+    dynamicColor: Boolean,
+    onThemeMode: (ThemeMode) -> Unit = {},
+    onDynamicColor: (Boolean) -> Unit = {},
     onSave: (String, Double?, Double?) -> Unit,
     onTestRest: () -> Unit = {},
     onTestReminder: () -> Unit = {},
@@ -116,7 +145,41 @@ fun SettingsScreen(
             Text("Weight + height logged to BodyMetric (for BMI, Wilks, normalized strength). Also log per-set: weight kg • reps • RIR in Workout. History never overwritten.", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
         }
 
+        // Appearance (todo 14): persisted theme mode + Android 12+ dynamic color.
+        // Controls use md.sys roles via MaterialTheme — no hardcoded colors.
+        Column(modifier = Modifier.clip(RepForgeShapes.CardLarge).background(MaterialTheme.colorScheme.surfaceVariant).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("APPEARANCE", style = RepForgeTypeRoles.LabelExpressive, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                ThemeMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
+                        selected = themeMode == mode,
+                        onClick = { onThemeMode(mode) },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
+                        label = { Text(mode.storageLabel.replaceFirstChar { it.uppercase() }) },
+                    )
+                }
+            }
+            SettingSwitchRow(
+                title = "Wallpaper colors",
+                subtitle = "Android 12+ dynamic color from your wallpaper",
+                checked = dynamicColor,
+                onChecked = onDynamicColor,
+            )
+        }
+
         SettingsCard(title = "Achievements", subtitle = "$achievementsUnlocked unlocked — streaks, PRs, volume, BMI", onClick = onNavigateAchievements)
+        // MD3 assist chips surface real unlocked achievements (todo 14); nothing
+        // is rendered when the list is empty — never fabricated badges.
+        if (achievementTitles.isNotEmpty()) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                achievementTitles.take(6).forEach { title ->
+                    AssistChip(
+                        onClick = onNavigateAchievements,
+                        label = { Text(title) },
+                    )
+                }
+            }
+        }
         SettingsCard(title = "Exercises", subtitle = "60 • Home (no equipment) / Gym • Chest, Back, Legs… • 3D muscle", onClick = onNavigateExercises)
         SettingsCard(title = "Gym Programs", subtitle = "PPL • Upper/Lower • Full Body • 5×5 — 60 exercises, 3D viewer", onClick = { onNavigateExercise("bench_bb") })
         SettingsCard(title = "RepForge Pro", subtitle = "Adaptive engine • Advanced analytics • $3.99/mo", onClick = onNavigatePaywall)
@@ -145,7 +208,27 @@ fun SettingsScreen(
             Text("• Per set: load kg + target reps + completed reps + RIR/RPE (SetLog)\n• Per day: body weight + height → BMI, strength/bodyweight ratio\n• PR detects new estimated 1RM (Epley) and unlocks Achievement", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurface)
             Text("Height once, weight often. Re-measure height rarely; log weight after each session if you want trend.", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
         }
-        Text("Build: 0.1.0 • Offline-first • On-device ML • Crash-free: ...% • Startup: ...ms", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+        Text("Offline-first • On-device ML • Health data stays local", style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+    }
+}
+
+@Composable
+private fun SettingSwitchRow(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onChecked: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = RepForgeTypeRoles.LabelExpressive, color = MaterialTheme.colorScheme.onSurface)
+            Text(subtitle, style = RepForgeTypeRoles.BodySupport, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(checked = checked, onCheckedChange = onChecked)
     }
 }
 

@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,32 +33,48 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.stateDescription
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.repforge.core.designsystem.R as DesignSystemR
+import com.repforge.core.designsystem.theme.RepForgeTheme
 import com.repforge.core.designsystem.token.FitnessVisualTokens
 import com.repforge.core.designsystem.token.RepForgeBrandTokens
 import com.repforge.core.designsystem.token.RepForgeMotion
 import com.repforge.core.designsystem.token.RepForgeShapes
 import com.repforge.core.designsystem.token.RepForgeTypeRoles
 import com.repforge.core.datastore.PreferencesDataSource
+import com.repforge.core.model.ThemeMode
 import com.repforge.feature.onboarding.OnboardingScreen
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun RepForgeRoot(preferencesDataSource: PreferencesDataSource) {
+    val themeMode by preferencesDataSource.themeMode.collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val dynamicColor by preferencesDataSource.dynamicColor.collectAsStateWithLifecycle(initialValue = false)
     val onboardingDone by produceState<Boolean?>(initialValue = null, preferencesDataSource) {
         preferencesDataSource.onboardingDone.collect { value = it }
     }
     val scope = rememberCoroutineScope()
 
-    when (onboardingDone) {
-        null -> ForgeLoadingScreen()
-        false -> OnboardingScreen(
-            onFinish = {
-                scope.launch { preferencesDataSource.setOnboardingDone(true) }
-            },
-        )
-        true -> RepForgeNavHost()
+    RepForgeTheme(
+        darkTheme = when (themeMode) {
+            ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            ThemeMode.LIGHT -> false
+            ThemeMode.DARK -> true
+        },
+        dynamicColor = dynamicColor,
+    ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            when (onboardingDone) {
+                null -> ForgeLoadingScreen()
+                false -> OnboardingScreen(
+                    onFinish = {
+                        scope.launch { preferencesDataSource.setOnboardingDone(true) }
+                    },
+                )
+                true -> RepForgeNavHost()
+            }
+        }
     }
 }
 

@@ -5,15 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import com.repforge.core.designsystem.token.RepForgeBrandTokens
 import com.repforge.core.designsystem.token.RepForgeMotion
 import com.repforge.core.datastore.PreferencesDataSource
-import com.repforge.core.designsystem.theme.RepForgeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,11 +23,7 @@ class MainActivity : ComponentActivity() {
         splashScreen.setOnExitAnimationListener(::animateSplashExit)
         enableEdgeToEdge()
         setContent {
-            RepForgeTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    RepForgeRoot(preferencesDataSource = preferencesDataSource)
-                }
-            }
+            RepForgeRoot(preferencesDataSource = preferencesDataSource)
         }
     }
 
